@@ -1,11 +1,11 @@
-# Draggable FAB and Flying Letter Popup
+# Draggable FAB and Popup
 
 This is a sample Flutter project that demonstrates a draggable Floating Action Button (FAB) which, when tapped, transforms into a popup dialog. The popup allows the user to write and send a message.
 
 ## Features
 
 *   **Draggable Floating Action Button:** The FAB can be moved around the screen.
-*   **Hero Animation:** A smooth "flying letter" transition from the FAB to the popup.
+*   **Hero Animation:** A smooth transition from the FAB to the popup.
 *   **Shake Animation:** The popup shakes if the user tries to send an empty message.
 *   **Bloc for State Management:** The FAB's position is managed using the `flutter_bloc` package.
 
