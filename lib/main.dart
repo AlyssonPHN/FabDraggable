@@ -1,6 +1,5 @@
 import 'package:button_instabug_sample/shared/components/float_button_draggable/controller/fab_floating_controller.dart';
 import 'package:button_instabug_sample/shared/components/float_button_draggable/float_button_draggable.dart';
-import 'package:button_instabug_sample/shared/components/flying_letter_popup/flying_letter_popup.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -24,22 +23,6 @@ class MyApp extends StatelessWidget {
             brightness: Brightness.light,
           ),
         ),
-        builder: (context, child) {
-          final fabCubit = BlocProvider.of<FabCubit>(context);
-          return BlocBuilder<FabCubit, FabState>(
-            bloc: fabCubit,
-            builder: (context, state) {
-              return Stack(
-                children: [
-                  child!,
-                  FloatingActionButtonDrag(controller: fabCubit),
-                  if (state.isPopupVisible)
-                    const FlyingLetterPopup(),
-                ],
-              );
-            },
-          );
-        },
         home: const MyHomePage(title: 'Draggable FAB'),
       ),
     );
@@ -62,7 +45,14 @@ class _MyHomePageState extends State<MyHomePage> {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(widget.title),
       ),
-      body: const SizedBox.shrink(),
+      body: Stack(
+        children: [
+          const Center(
+            child: Text('Tap the button to open the popup!'),
+          ),
+          FloatingActionButtonDrag(controller: context.read<FabCubit>()),
+        ],
+      ),
     );
   }
 }

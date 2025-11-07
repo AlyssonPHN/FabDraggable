@@ -10,7 +10,6 @@ class FabCubit extends Cubit<FabState> {
           targetUrl: '',
           position: const Offset(20, 100),
           isDragging: false,
-          isPopupVisible: false,
         ));
 
   bool _hasMoved = false;
@@ -21,8 +20,6 @@ class FabCubit extends Cubit<FabState> {
   void setTargetUrl(String url) => emit(state.copyWith(targetUrl: url));
   void setPosition(Offset newPosition) => emit(state.copyWith(position: newPosition));
   void setDragging(bool dragging) => emit(state.copyWith(isDragging: dragging));
-  void showPopup() => emit(state.copyWith(isPopupVisible: true));
-  void hidePopup() => emit(state.copyWith(isPopupVisible: false));
 
   void onPanStart(DragStartDetails details) {
     _hasMoved = false;
@@ -84,14 +81,12 @@ class FabState {
   final String targetUrl;
   final Offset position;
   final bool isDragging;
-  final bool isPopupVisible;
 
   FabState({
     required this.isVisible,
     required this.targetUrl,
     required this.position,
     required this.isDragging,
-    required this.isPopupVisible,
   });
 
   FabState copyWith({
@@ -99,14 +94,12 @@ class FabState {
     String? targetUrl,
     Offset? position,
     bool? isDragging,
-    bool? isPopupVisible,
   }) {
     return FabState(
       isVisible: isVisible ?? this.isVisible,
       targetUrl: targetUrl ?? this.targetUrl,
       position: position ?? this.position,
       isDragging: isDragging ?? this.isDragging,
-      isPopupVisible: isPopupVisible ?? this.isPopupVisible,
     );
   }
 }
