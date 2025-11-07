@@ -1,16 +1,35 @@
-# button_instabug_sample
+# Draggable FAB and Flying Letter Popup
 
-A new Flutter project.
+This is a sample Flutter project that demonstrates a draggable Floating Action Button (FAB) which, when tapped, transforms into a popup dialog. The popup allows the user to write and send a message.
 
-## Getting Started
+## Features
 
-This project is a starting point for a Flutter application.
+*   **Draggable Floating Action Button:** The FAB can be moved around the screen.
+*   **Hero Animation:** A smooth "flying letter" transition from the FAB to the popup.
+*   **Shake Animation:** The popup shakes if the user tries to send an empty message.
+*   **Bloc for State Management:** The FAB's position is managed using the `flutter_bloc` package.
 
-A few resources to get you started if this is your first Flutter project:
+## How to Run
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+1.  Clone this repository.
+2.  Make sure you have the Flutter SDK installed.
+3.  Run `flutter pub get` to install the dependencies.
+4.  Run `flutter run` to build and run the app on your connected device or emulator.
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Project Structure
+
+```
+lib/
+├── main.dart                 # App entry point
+├── shared/
+│   ├── components/
+│   │   ├── float_button_draggable/
+│   │   │   ├── controller/
+│   │   │   │   └── fab_floating_controller.dart  # BLoC state management for the FAB
+│   │   │   └── float_button_draggable.dart       # The draggable FAB widget
+│   │   └── flying_letter_popup/
+│   │       └── flying_letter_popup.dart        # The popup dialog and its animations
+│   └── constants/
+│       └── Dimens.dart             # App dimensions
+...
+```
