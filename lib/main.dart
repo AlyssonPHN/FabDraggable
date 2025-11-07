@@ -16,7 +16,7 @@ class MyApp extends StatelessWidget {
     return BlocProvider(
       create: (_) => FabCubit(),
       child: MaterialApp(
-        title: 'Fab Draggable',
+        title: 'Draggable FAB',
         theme: ThemeData.light().copyWith(
           scaffoldBackgroundColor: Colors.white,
           colorScheme: ColorScheme.fromSeed(
@@ -40,7 +40,7 @@ class MyApp extends StatelessWidget {
             },
           );
         },
-        home: const MyHomePage(title: 'Fab Draggable'),
+        home: const MyHomePage(title: 'Draggable FAB'),
       ),
     );
   }

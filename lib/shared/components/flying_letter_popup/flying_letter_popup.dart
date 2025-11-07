@@ -11,16 +11,25 @@ class FlyingLetterPopup extends StatefulWidget {
 }
 
 class _FlyingLetterPopupState extends State<FlyingLetterPopup>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
+    with TickerProviderStateMixin {
+  late AnimationController _flyController;
   late Animation<Offset> _offsetAnimation;
   late Animation<double> _fadeAnimation;
+
+  late AnimationController _shakeController;
+  late Animation<Offset> _shakeAnimation;
+
   final TextEditingController _textController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(
+    _initFlyAnimation();
+    _initShakeAnimation();
+  }
+
+  void _initFlyAnimation() {
+    _flyController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 500),
     );
@@ -29,7 +38,7 @@ class _FlyingLetterPopupState extends State<FlyingLetterPopup>
       begin: Offset.zero,
       end: const Offset(0.0, -2.0),
     ).animate(CurvedAnimation(
-      parent: _controller,
+      parent: _flyController,
       curve: Curves.easeIn,
     ));
 
@@ -37,22 +46,45 @@ class _FlyingLetterPopupState extends State<FlyingLetterPopup>
       begin: 1.0,
       end: 0.0,
     ).animate(CurvedAnimation(
-      parent: _controller,
+      parent: _flyController,
       curve: Curves.easeIn,
     ));
   }
 
+  void _initShakeAnimation() {
+    _shakeController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 300),
+    );
+
+    _shakeAnimation = TweenSequence<Offset>([
+      TweenSequenceItem(tween: Tween(begin: const Offset(0, 0), end: const Offset(-0.05, 0)), weight: 1.0),
+      TweenSequenceItem(tween: Tween(begin: const Offset(-0.05, 0), end: const Offset(0.05, 0)), weight: 1.0),
+      TweenSequenceItem(tween: Tween(begin: const Offset(0.05, 0), end: const Offset(-0.05, 0)), weight: 1.0),
+      TweenSequenceItem(tween: Tween(begin: const Offset(-0.05, 0), end: const Offset(0.05, 0)), weight: 1.0),
+      TweenSequenceItem(tween: Tween(begin: const Offset(0.05, 0), end: const Offset(-0.05, 0)), weight: 1.0),
+      TweenSequenceItem(tween: Tween(begin: const Offset(-0.05, 0), end: const Offset(0.05, 0)), weight: 1.0),
+      TweenSequenceItem(tween: Tween(begin: const Offset(0.05, 0), end: const Offset(-0.05, 0)), weight: 1.0),
+      TweenSequenceItem(tween: Tween(begin: const Offset(-0.05, 0), end: const Offset(0, 0)), weight: 1.0),
+    ]).animate(_shakeController);
+  }
+
   @override
   void dispose() {
-    _controller.dispose();
+    _flyController.dispose();
+    _shakeController.dispose();
     _textController.dispose();
     super.dispose();
   }
 
   void _sendLetter() {
-    _controller.forward().whenComplete(() {
-      context.read<FabCubit>().hidePopup();
-    });
+    if (_textController.text.trim().isEmpty) {
+      _shakeController.forward(from: 0.0);
+    } else {
+      _flyController.forward().whenComplete(() {
+        context.read<FabCubit>().hidePopup();
+      });
+    }
   }
 
   @override
@@ -69,45 +101,11 @@ class _FlyingLetterPopupState extends State<FlyingLetterPopup>
                 return PageRouteBuilder(
                   opaque: false,
                   pageBuilder: (context, _, __) => Center(
-                    child: Container(
-                      padding: const EdgeInsets.all(20),
-                      margin: const EdgeInsets.symmetric(horizontal: 20),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(15),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.1),
-                            blurRadius: 10,
-                            offset: const Offset(0, 5),
-                          ),
-                        ],
-                      ),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const Text(
-                            'Escreva sua mensagem',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const SizedBox(height: 16),
-                          TextField(
-                            controller: _textController,
-                            maxLines: 5,
-                            decoration: const InputDecoration(
-                              hintText: 'Digite algo...',
-                              border: OutlineInputBorder(),
-                            ),
-                          ),
-                          const SizedBox(height: 16),
-                          ElevatedButton(
-                            onPressed: _sendLetter,
-                            child: const Text('Enviar'),
-                          ),
-                        ],
+                    child: SlideTransition(
+                      position: _shakeAnimation,
+                      child: _PopupCard(
+                        onSend: _sendLetter,
+                        textController: _textController,
                       ),
                     ),
                   ),
@@ -116,6 +114,61 @@ class _FlyingLetterPopupState extends State<FlyingLetterPopup>
             ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _PopupCard extends StatelessWidget {
+  final VoidCallback onSend;
+  final TextEditingController textController;
+
+  const _PopupCard({
+    required this.onSend,
+    required this.textController,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      margin: const EdgeInsets.symmetric(horizontal: 20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(15),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 10,
+            offset: const Offset(0, 5),
+          ),
+        ],
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Text(
+            'Write your message',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 16),
+          TextField(
+            controller: textController,
+            maxLines: 5,
+            decoration: const InputDecoration(
+              hintText: 'Type something...',
+              border: OutlineInputBorder(),
+            ),
+          ),
+          const SizedBox(height: 16),
+          ElevatedButton(
+            onPressed: onSend,
+            child: const Text('Send'),
+          ),
+        ],
       ),
     );
   }
